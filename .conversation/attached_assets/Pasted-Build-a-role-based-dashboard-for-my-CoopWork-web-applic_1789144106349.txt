@@ -1,0 +1,326 @@
+Build a role-based dashboard for my CoopWork web application.
+
+IMPORTANT:
+- Do NOT use AI, machine learning, LLMs, OpenAI, or any AI-generated matching logic.
+- Do NOT create a Random Forest model or any recommendation algorithm.
+- This task is ONLY for the frontend dashboard, authentication, database integration, and normal CRUD operations.
+- Use deterministic database queries and normal application logic only.
+
+TECH STACK:
+- Next.js 16
+- React 19
+- TypeScript
+- Tailwind CSS 4
+- Lucide React icons
+- Supabase PostgreSQL
+- Supabase Authentication
+- Next.js App Router
+
+PROJECT REQUIREMENT:
+Create completely separate dashboards for:
+1. Customer
+2. Worker
+3. Cooperative Admin
+
+AUTHENTICATION:
+Use Supabase Auth.
+
+Create/use a profiles table with:
+- id
+- name
+- email
+- role
+- cooperative_id
+
+Allowed roles:
+- customer
+- worker
+- cooperative_admin
+
+After login:
+- customer → /dashboard
+- worker → /worker/dashboard
+- cooperative_admin → /admin/dashboard
+
+Do NOT allow a user to access another role's dashboard.
+Implement server-side authorization and do not rely only on hiding UI elements.
+
+CUSTOMER DASHBOARD:
+Route:
+ /dashboard
+
+Create a professional responsive dashboard with:
+
+Sidebar:
+- Dashboard
+- Find a Service
+- My Bookings
+- Payments
+- Reviews & Ratings
+- Complaints
+- Profile
+- Logout
+
+Main dashboard:
+- Welcome message with customer's name
+- Total bookings
+- Active bookings
+- Completed bookings
+- Pending bookings
+- Recent bookings
+
+Create a "Find a Service" page where the customer can select:
+- Electrician
+- Plumber
+- Carpenter
+- Painter
+- Cleaner
+- Appliance Repair
+- Mason
+- Gardener
+
+For now, DO NOT implement AI matching.
+
+Instead, display workers using normal Supabase database queries.
+
+Allow filtering workers by:
+- service/skill
+- availability
+- rating
+- distance if location data exists
+
+Worker cards should show:
+- Name
+- Skill
+- Rating
+- Experience
+- Availability
+- Verification status
+- Location
+- Book Now button
+
+BOOKING:
+When the customer clicks "Book Now":
+- Open a booking form
+- Select service date
+- Select time
+- Add service address
+- Add description
+- Create a booking record in Supabase
+
+Booking status should support:
+- pending
+- accepted
+- rejected
+- in_progress
+- completed
+- cancelled
+
+WORKER DASHBOARD:
+Route:
+ /worker/dashboard
+
+Sidebar:
+- Dashboard
+- Service Requests
+- My Bookings
+- Availability
+- Earnings
+- Ratings
+- Skills
+- Profile
+- Logout
+
+Main dashboard:
+- Welcome message
+- Pending requests
+- Active jobs
+- Completed jobs
+- Total earnings
+- Average rating
+
+SERVICE REQUESTS:
+Display customer booking requests assigned to the worker.
+
+Each request should show:
+- Customer name
+- Service
+- Date
+- Time
+- Address
+- Description
+- Booking status
+
+Provide:
+- Accept
+- Reject
+
+buttons.
+
+When worker accepts:
+booking status = "accepted"
+
+When worker rejects:
+booking status = "rejected"
+
+MY BOOKINGS:
+Show worker's bookings with status filters:
+- Pending
+- Accepted
+- In Progress
+- Completed
+- Cancelled
+
+AVAILABILITY:
+Create a page where workers can set:
+- Available / unavailable
+- Working days
+- Working hours
+
+Store this information in Supabase.
+
+EARNINGS:
+Calculate earnings using normal JavaScript/SQL calculations from completed bookings.
+
+Do NOT use AI for earnings calculation.
+
+COOPERATIVE ADMIN DASHBOARD:
+Route:
+ /admin/dashboard
+
+Sidebar:
+- Dashboard
+- Workers
+- Customers
+- Bookings
+- Services
+- Complaints
+- Payments
+- Reports
+- Profile
+- Logout
+
+Display:
+- Total workers
+- Total customers
+- Total bookings
+- Active bookings
+- Completed bookings
+- Pending complaints
+
+WORKER MANAGEMENT:
+Admin should be able to:
+- View workers
+- View worker details
+- Verify workers
+- Disable workers if required
+
+BOOKING MANAGEMENT:
+Admin can view all bookings and their statuses.
+
+DATABASE:
+Use Supabase PostgreSQL.
+
+If the required tables already exist, inspect and use them instead of creating duplicate tables.
+
+If they don't exist, create a clean database schema for:
+
+profiles
+workers
+services
+bookings
+availability
+reviews
+payments
+complaints
+cooperatives
+
+Use foreign keys where appropriate.
+
+SECURITY:
+Implement Supabase Row Level Security.
+
+Customers should only be able to access their own:
+- profile
+- bookings
+- payments
+- reviews
+- complaints
+
+Workers should only be able to access:
+- their own profile
+- their own bookings
+- their availability
+- their earnings
+- their reviews
+
+Cooperative admins can access cooperative-related workers and bookings according to their cooperative_id.
+
+UI:
+- Modern professional dashboard
+- Responsive design
+- Desktop + tablet + mobile
+- Sidebar navigation
+- Cards
+- Tables
+- Status badges
+- Forms
+- Modal/dialog for booking
+- Loading states
+- Empty states
+- Error states
+- Toast notifications
+
+Use Lucide React icons.
+
+Do NOT add:
+- AI chatbot
+- AI recommendations
+- machine learning
+- Random Forest
+- OpenAI API
+- embeddings
+- vector database
+- AI-generated worker ranking
+
+IMPORTANT ARCHITECTURE:
+
+Customer
+   ↓
+Next.js Dashboard
+   ↓
+Supabase Auth
+   ↓
+Supabase PostgreSQL
+   ↓
+Workers / Bookings / Reviews / Availability
+
+Worker
+   ↓
+Next.js Worker Dashboard
+   ↓
+Supabase Auth
+   ↓
+Supabase PostgreSQL
+
+Admin
+   ↓
+Next.js Admin Dashboard
+   ↓
+Supabase Auth
+   ↓
+Supabase PostgreSQL
+
+Keep the code modular and production-ready.
+
+Before changing the database, inspect the existing project structure, existing Supabase schema, authentication code, and existing routes. Reuse existing components and tables wherever possible.
+
+Do not overwrite existing functionality unnecessarily.
+
+At the end, explain:
+1. Files created/modified
+2. Database tables used
+3. Routes created
+4. How customer/worker/admin role detection works
+5. How to run the project
+6. Any Supabase environment variables required

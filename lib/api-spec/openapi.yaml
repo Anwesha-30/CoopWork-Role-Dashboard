@@ -1,0 +1,365 @@
+openapi: 3.1.0
+info:
+  title: Api
+  version: 0.1.0
+  description: CoopWork role-based cooperative services API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+  - name: session
+  - name: dashboard
+  - name: bookings
+  - name: workers
+  - name: availability
+  - name: reviews
+  - name: complaints
+  - name: admin
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/HealthStatus" }
+  /session:
+    get:
+      operationId: getSession
+      tags: [session]
+      summary: Get the active demo session
+      responses:
+        "200":
+          description: Active session
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Session" }
+  /dashboard/summary:
+    get:
+      operationId: getDashboardSummary
+      tags: [dashboard]
+      summary: Get role-specific dashboard summary
+      parameters:
+        - { $ref: "#/components/parameters/Role" }
+      responses:
+        "200":
+          description: Summary
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/DashboardSummary" }
+  /bookings:
+    get:
+      operationId: listBookings
+      tags: [bookings]
+      summary: List bookings visible to the active role
+      parameters:
+        - { $ref: "#/components/parameters/Role" }
+        - { $ref: "#/components/parameters/Status" }
+      responses:
+        "200":
+          description: Bookings
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Booking" }
+    post:
+      operationId: createBooking
+      tags: [bookings]
+      summary: Create a customer booking
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/BookingInput" }
+      responses:
+        "201":
+          description: Booking created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Booking" }
+  /bookings/{bookingId}/status:
+    patch:
+      operationId: updateBookingStatus
+      tags: [bookings]
+      summary: Update a booking status
+      parameters:
+        - { $ref: "#/components/parameters/BookingId" }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/BookingStatusInput" }
+      responses:
+        "200":
+          description: Updated booking
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Booking" }
+  /workers:
+    get:
+      operationId: listWorkers
+      tags: [workers]
+      summary: Find workers with deterministic filters
+      parameters:
+        - { name: service, in: query, schema: { type: [string, "null"] } }
+        - { name: availability, in: query, schema: { type: [string, "null"] } }
+        - { name: minRating, in: query, schema: { type: [number, "null"] } }
+      responses:
+        "200":
+          description: Workers
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Worker" }
+  /availability:
+    get:
+      operationId: getAvailability
+      tags: [availability]
+      summary: Get the active worker availability
+      responses:
+        "200":
+          description: Availability
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Availability" }
+    put:
+      operationId: updateAvailability
+      tags: [availability]
+      summary: Update worker availability
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AvailabilityInput" }
+      responses:
+        "200":
+          description: Updated availability
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Availability" }
+  /reviews:
+    get:
+      operationId: listReviews
+      tags: [reviews]
+      summary: List reviews visible to the active role
+      responses:
+        "200":
+          description: Reviews
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Review" }
+  /complaints:
+    get:
+      operationId: listComplaints
+      tags: [complaints]
+      summary: List complaints visible to the active role
+      responses:
+        "200":
+          description: Complaints
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Complaint" }
+    post:
+      operationId: createComplaint
+      tags: [complaints]
+      summary: Create a customer complaint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ComplaintInput" }
+      responses:
+        "201":
+          description: Complaint created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Complaint" }
+  /admin/workers:
+    get:
+      operationId: listAdminWorkers
+      tags: [admin]
+      summary: List cooperative workers
+      responses:
+        "200":
+          description: Workers
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Worker" }
+  /admin/workers/{workerId}/verification:
+    patch:
+      operationId: updateWorkerVerification
+      tags: [admin]
+      summary: Verify or disable a worker
+      parameters:
+        - { name: workerId, in: path, required: true, schema: { type: string } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/WorkerVerificationInput" }
+      responses:
+        "200":
+          description: Updated worker
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Worker" }
+components:
+  parameters:
+    Role:
+      name: role
+      in: query
+      required: false
+      schema: { $ref: "#/components/schemas/Role" }
+    Status:
+      name: status
+      in: query
+      required: false
+      schema: { type: [string, "null"] }
+    BookingId:
+      name: bookingId
+      in: path
+      required: true
+      schema: { type: string }
+  schemas:
+    HealthStatus:
+      type: object
+      required: [status]
+      properties: { status: { type: string } }
+    Role:
+      type: string
+      enum: [customer, worker, cooperative_admin]
+    Session:
+      type: object
+      required: [userId, name, email, role, cooperativeId]
+      properties:
+        userId: { type: string }
+        name: { type: string }
+        email: { type: string }
+        role: { $ref: "#/components/schemas/Role" }
+        cooperativeId: { type: string }
+    DashboardSummary:
+      type: object
+      required: [role, metrics, recentBookings]
+      properties:
+        role: { $ref: "#/components/schemas/Role" }
+        metrics:
+          type: array
+          items: { $ref: "#/components/schemas/Metric" }
+        recentBookings:
+          type: array
+          items: { $ref: "#/components/schemas/Booking" }
+    Metric:
+      type: object
+      required: [label, value, detail, tone]
+      properties:
+        label: { type: string }
+        value: { type: string }
+        detail: { type: string }
+        tone: { type: string, enum: [blue, green, orange, purple, red] }
+    Booking:
+      type: object
+      required: [id, customerName, workerName, service, date, time, address, description, status, amount]
+      properties:
+        id: { type: string }
+        customerName: { type: string }
+        workerName: { type: string }
+        service: { type: string }
+        date: { type: string }
+        time: { type: string }
+        address: { type: string }
+        description: { type: string }
+        status: { type: string, enum: [pending, accepted, rejected, in_progress, completed, cancelled] }
+        amount: { type: number }
+    BookingInput:
+      type: object
+      required: [workerId, service, date, time, address, description]
+      properties:
+        workerId: { type: string }
+        service: { type: string }
+        date: { type: string }
+        time: { type: string }
+        address: { type: string }
+        description: { type: string }
+    BookingStatusInput:
+      type: object
+      required: [status]
+      properties:
+        status: { type: string, enum: [pending, accepted, rejected, in_progress, completed, cancelled] }
+    Worker:
+      type: object
+      required: [id, name, skill, rating, experience, availability, verified, location, jobsCompleted, initials]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        skill: { type: string }
+        rating: { type: number }
+        experience: { type: string }
+        availability: { type: string, enum: [Available, Busy, Unavailable] }
+        verified: { type: boolean }
+        location: { type: string }
+        jobsCompleted: { type: integer }
+        initials: { type: string }
+    Availability:
+      type: object
+      required: [available, days, startTime, endTime]
+      properties:
+        available: { type: boolean }
+        days:
+          type: array
+          items: { type: string }
+        startTime: { type: string }
+        endTime: { type: string }
+    AvailabilityInput:
+      type: object
+      required: [available, days, startTime, endTime]
+      properties:
+        available: { type: boolean }
+        days:
+          type: array
+          items: { type: string }
+        startTime: { type: string }
+        endTime: { type: string }
+    Review:
+      type: object
+      required: [id, reviewer, subject, rating, comment, date]
+      properties:
+        id: { type: string }
+        reviewer: { type: string }
+        subject: { type: string }
+        rating: { type: number }
+        comment: { type: string }
+        date: { type: string }
+    Complaint:
+      type: object
+      required: [id, subject, description, status, createdAt]
+      properties:
+        id: { type: string }
+        subject: { type: string }
+        description: { type: string }
+        status: { type: string, enum: [open, in_review, resolved] }
+        createdAt: { type: string }
+    ComplaintInput:
+      type: object
+      required: [subject, description]
+      properties:
+        subject: { type: string }
+        description: { type: string }
+    WorkerVerificationInput:
+      type: object
+      required: [verified, enabled]
+      properties:
+        verified: { type: boolean }
+        enabled: { type: boolean }

@@ -1,0 +1,1 @@
+- [CoopWork provider boundary](coopwork-provider-boundary.md) — demo roles are temporary; real auth and cooperative-scoped authorization must replace the adapter before production access.
